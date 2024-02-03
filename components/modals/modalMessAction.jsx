@@ -15,7 +15,7 @@ export default function ModalMessAction({message='Informacion de prueba',setCtrl
   return(
     <>
       <div className="fixed top-0 left-0 w-full h-full z-50 bg-black/20 grid place-content-center">
-        <div className="bg-white flex flex-col rounded-lg">
+        <div className="bg-white flex flex-col rounded-lg px-2">
           <div className="p-2">{message}</div>
           <div className={'flex justify-center gap-4 py-2'}>
             {typeModal.toLowerCase()=='q' &&

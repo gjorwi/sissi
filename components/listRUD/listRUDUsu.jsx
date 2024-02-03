@@ -6,6 +6,8 @@ import { deleteUsuarios } from '@/servicios/put'
 import { useEffect,useState } from "react";
 import ModalMessAction from "../modals/modalMessAction";
 import {getStoragedUserDat} from "@/utils/utilidades";
+import CustomLoading from "@/components/loading/customLoading";
+import { Suspense } from "react";
 
 export default function ListRUDServ(){
   const [userDat,setUserDat]=useState('')
@@ -46,27 +48,29 @@ export default function ListRUDServ(){
       {ctrlModal &&
         <ModalMessAction setCtrlModal={setCtrlModal} typeModal={typeModal} message={message} resultOption={resultOption}></ModalMessAction>
       }
-      <div className="flex flex-col text-sm">
-        <div className="grid grid-cols-3 gap-2 bg-slate-200 p-2 rounded-lg uppercase">
-          <div>Cedula</div>
-          <div>Usuario</div>
-          <div className="flex justify-center">Acción</div>
-        </div>
-        {usuarios?.length==0 ?
-          <div className="text-xs p-2">No hay usuarios registrados</div>
-          :<>
-          {
-            usuarios?.map((usuario,i)=>(
-              <div key={i} className="grid grid-cols-3 gap-2 text-xs">
-                <div className="flex items-center pl-2">{usuario.usuCed}</div>
-                <div className="flex items-center pl-1">{usuario.usuUserName}</div>
-                <div onClick={()=>questionAction(usuario._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
-              </div>
-            ))
+      <Suspense fallback={<CustomLoading/>}>
+        <div className="flex flex-col text-sm">
+          <div className="grid grid-cols-3 gap-2 bg-slate-200 p-2 rounded-lg uppercase">
+            <div>Cedula</div>
+            <div>Usuario</div>
+            <div className="flex justify-center">Acción</div>
+          </div>
+          {usuarios?.length==0 ?
+            <div className="text-xs p-2">No hay usuarios registrados</div>
+            :<>
+            {
+              usuarios?.map((usuario,i)=>(
+                <div key={i} className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="flex items-center pl-2">{usuario.usuCed}</div>
+                  <div className="flex items-center pl-1">{usuario.usuUserName}</div>
+                  <div onClick={()=>questionAction(usuario._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
+                </div>
+              ))
+            }
+            </>
           }
-          </>
-        }
-      </div>
+        </div>
+      </Suspense>
     </>
   )
 }

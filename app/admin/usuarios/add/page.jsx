@@ -4,12 +4,14 @@ import ModalMessAction from "@/components/modals/modalMessAction";
 import {checkPassword,onlyNumbers,getStoragedUserDat} from '@/utils/utilidades'
 import { getInstituciones,getDepartamentos } from '@/servicios/get'
 import { addUsuarios } from '@/servicios/add'
+import CustomLoading from "@/components/loading/customLoading";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Registrar() {
   const {register,handleSubmit,reset,formState:{errors }} = useForm({mode:'onChange'});
   const [userDat,setUserDat]=useState('')
+  const [ctrlLoading,setCtrlLoading]=useState(false)
   const [dataInst,setDataInst]=useState([])
   const [dataDepart,setDataDepart]=useState([])
   const [ctrlModal,setCtrlModal]=useState(false)
@@ -43,6 +45,7 @@ export default function Registrar() {
   const resultOption= ()=>{}
 
   const submitFunction =handleSubmit(async (dat)=>{
+    setCtrlLoading(true)
     const check= await checkPassword(dat.usuPassword,dat.usuPasswordconfirm)
     const numberCheck= await onlyNumbers(dat.usuCed,false)
     const cellCheck= await onlyNumbers(dat.usuTelefono,true)
@@ -59,6 +62,7 @@ export default function Registrar() {
       return
     }
     const {data,mensaje,error,codigo}= await addUsuarios(dat,userDat.token)
+    setCtrlLoading(false)
     if(!error && (codigo!=501 || codigo!=500)){
       reset({usuName: '',usuCed: '',usuUserName: '',usuTelefono:'',usuPassword: '',usuPasswordconfirm: '',instCod: '',departCod: ''})
     }
@@ -67,6 +71,9 @@ export default function Registrar() {
   
   return (
     <>
+      {ctrlLoading &&
+        <CustomLoading/>
+      }
       {ctrlModal &&
         <ModalMessAction setCtrlModal={setCtrlModal} typeModal={typeModal} message={message} resultOption={resultOption}></ModalMessAction>
       }
@@ -134,6 +141,14 @@ export default function Registrar() {
               <label htmlFor="usuPasswordconfirm">Confirmar contraseña</label>
               <input type="password" {...register("usuPasswordconfirm", { required: {value:true,message:'Confirmar la contraseña.'} })} className="text-xs rounded-lg border outline-none h-10 pl-2 mt-2" placeholder="******" name="usuPasswordconfirm" />
               {errors.usuPasswordconfirm && <p className="text-red-400 text-xs ml-2">{errors.usuPasswordconfirm.message}</p>}
+            </div>
+            <div className="flex justify-center items-center">
+              <label htmlFor="admin" >Admin</label>
+              <input type="checkbox" {...register("admin")} className="text-xs ml-2 rounded-lg border outline-none " name="admin" />
+            </div>
+            <div className="flex justify-center items-center">
+              <label htmlFor="onlyRead" >Solo lectura</label>
+              <input type="checkbox" {...register("onlyRead")} className="text-xs ml-2 rounded-lg border outline-none " name="onlyRead" />
             </div>
           </div>
           <BtnAction className={'w-full mt-8 mb-4'} label={'Guardar'} type={"submit"}></BtnAction>

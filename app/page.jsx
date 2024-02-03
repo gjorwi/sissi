@@ -3,14 +3,17 @@ import Link from "next/link";
 import {getInstituciones} from "@/servicios/get"
 import {addLogin} from "@/servicios/add"
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { useForm } from "react-hook-form";
+import CustomLoading from "@/components/loading/customLoading";
 import ModalMessAction from "@/components/modals/modalMessAction";
 import {storageUserDat} from '@/utils/utilidades'
 
 export default function Login() {
   const {register,handleSubmit,reset,formState:{errors }} = useForm({mode:'onChange'});
   const [instituciones,setInstituciones]=useState([])
+  const submitTypeval=useRef('')
+  const [ctrlLoading,setCtrlLoading]=useState(false)
   const [ctrlModal,setCtrlModal]=useState(false)
   const [message,setMessage]=useState('')
   const [typeModal,setTypeModal]=useState('')
@@ -32,24 +35,39 @@ export default function Login() {
   }
   const resultOption= ()=>{}
 
+  const submitType= (val)=>{
+    submitTypeval.current=val
+    submitFunction()
+  }
+
   const submitFunction =handleSubmit(async (dat)=>{
-    var btnAdmin='Administrador?'
+    var btnAdmin='Administrador'
     var btnEntrar='Entrar'
-    if(dat.typeButton==btnAdmin){
+    setCtrlLoading(true)
+    if(submitTypeval.current==btnAdmin){
       const {data,mensaje,error,codigo}= await addLogin(dat)
       if(!error && (codigo!=501 || codigo!=500)){
         await storageUserDat('userDat',data)
+        setCtrlLoading(false)
         router.push('/admin')
         reset({usuUserName: '', usuPassword: '', usuInstId:''})
+        questionAction('Entrando...')
         return
       }
       questionAction(mensaje)
-    }else if(dat.typeButton==btnEntrar){
+      setCtrlLoading(false)
+    }else if(submitTypeval.current==btnEntrar){
       alert('Entro en entrar')
+      setCtrlLoading(false)
+    }else{
+      setCtrlLoading(false)
     }
   })
   return (
     <>
+      {ctrlLoading &&
+        <CustomLoading/>
+      }
       {ctrlModal &&
         <ModalMessAction setCtrlModal={setCtrlModal} typeModal={typeModal} message={message} resultOption={resultOption}></ModalMessAction>
       }
@@ -87,12 +105,14 @@ export default function Login() {
                 {errors.usuPassword && <p className="text-red-400 text-xs ml-2">{errors.usuPassword.message}</p>}
               </div>
             <div className="flex justify-end text-sm text-white p-2">
-              <input type="submit" {...register("typeButton")} defaultValue='Administrador?' className="cursor-pointer text-cyan-500 text-xs underline"/>
+              <button onClick={()=>submitType('Administrador')} className="cursor-pointer text-cyan-500 text-xs underline p-2">Administrar?</button>
             </div>
           </div>
           <div className="h-[1px] w-full bg-slate-100 mb-3"></div>
           <div className="flex flex-col items-center justify-center mb-4 px-8 py-2">
-            <Link href={'/home'} className="flex justify-center bg-cyan-500 px-4 w-full rounded-lg text-white py-3"><span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]">Entrar</span></Link>
+            {/* <Link href={'/home'} className="flex justify-center bg-cyan-500 px-4 w-full rounded-lg text-white py-3"><span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]">Entrar</span></Link> */}
+            {/* <input type="submit" {...register("typeButton2")} defaultValue='Entrar' className="flex justify-center bg-cyan-500 px-4 w-full rounded-lg text-white py-3 cursor-pointer"/> */}
+            <button onClick={()=>submitType('Entrar')} className="flex justify-center bg-cyan-500 px-4 w-full rounded-lg text-white py-3 cursor-pointer"><span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]">Entrar</span></button>
           </div>
         </form>
       </main>
