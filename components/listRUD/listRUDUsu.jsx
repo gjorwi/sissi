@@ -33,12 +33,21 @@ export default function ListRUDServ(){
     setMessage('El usuario será eliminado.')
     setCtrlModal(true)
   }
-  const resultOption= ()=>{
+  const messageInfo=(val)=>{
+    setTypeModal('r')
+    setMessage(val)
+    setCtrlModal(true)
+  }
+  const resultOption= (res)=>{
     delecte(passVal)
   }
   const delecte = async(id)=>{
-    var idDelete={_id:id}
-    const {data,mensaje,error}= await deleteUsuarios(idDelete,userDat)
+    var sendData={_id:id,usuId:userDat._id}
+    const {data,mensaje,error}= await deleteUsuarios(sendData,userDat)
+    if(error){
+      messageInfo(mensaje)
+      return
+    }
     getAll()
     console.log(data)
   }

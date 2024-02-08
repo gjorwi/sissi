@@ -1,8 +1,8 @@
-import config from "@/config.json"
+import {API_URL} from "@/config"
 
 export async function addLogin(data){
   try {
-    var adddata= await fetch(config.URL+'/login/add', {
+    var adddata= await fetch(API_URL+'/login/add', {
       method: 'POST',
       headers: {
       'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ export async function addLogin(data){
 
 export async function addInstituciones(data,token){
   try {
-    var adddata= await fetch(config.URL+'/instituciones/add', {
+    var adddata= await fetch(API_URL+'/instituciones/add', {
       method: 'POST',
       headers: {
       'Authorization': 'Bearer '+token,
@@ -36,7 +36,7 @@ export async function addInstituciones(data,token){
 }
 export async function addDepartamentos(data,token){
   try {
-    var adddata= await fetch(config.URL+'/departamentos/add', {
+    var adddata= await fetch(API_URL+'/departamentos/add', {
       method: 'POST',
       headers: {
       'Authorization': 'Bearer '+token,
@@ -53,7 +53,7 @@ export async function addDepartamentos(data,token){
 }
 export async function addUsuarios(data,token){
   try {
-    var adddata= await fetch(config.URL+'/usuarios/add', {
+    var adddata= await fetch(API_URL+'/usuarios/add', {
       method: 'POST',
       headers: {
       'Authorization': 'Bearer '+token,

@@ -8,7 +8,10 @@ export default function ModalMessAction({message='Informacion de prueba',setCtrl
     setCtrlModal(false)
   }
   const aceptOption=()=>{
-    resultOption()
+    const type='q'
+    if(typeModal==type){
+      resultOption()
+    }
     closeModal()
   }
   

@@ -9,14 +9,16 @@ import {getStoragedUserDat,removeStoragedUserDat} from "@/utils/utilidades";
 
 export default function RootLayout({ children }) {
   var path=usePathname()
+  const [userDat,setUserDat]=useState('')
   const [split,setSplit]=useState([])
   const [pathShow,setPathShow]=useState([])
   const router = useRouter();
 
   useEffect(() => {
-    const userDat = getStoragedUserDat("userDat");
+    const userDatTemp=getStoragedUserDat("userDat")
+    setUserDat(userDatTemp)
     // Verificar si el token de seguridad es válido
-    if (!userDat || !userDat?.token) {
+    if (!userDatTemp || !userDatTemp?.token) {
       // Redirigir al usuario a la página de inicio de sesión
       router.replace("/");
     }
@@ -49,7 +51,7 @@ export default function RootLayout({ children }) {
       </header>
       <div className="flex justify-center text-sm font-light ">
         <p className="w-10/12 text-center">
-          Hola <span className="uppercase pl-1 text-black font-semibold">Gjorwi06</span>, Bienvenido al modulo de configuración.
+          Hola <span className="uppercase pl-1 text-black font-semibold">{userDat.usuUserName}</span>, Bienvenido al modulo de configuración.
         </p>
       </div>
       {children}

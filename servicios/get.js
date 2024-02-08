@@ -1,8 +1,8 @@
-import config from "@/config.json"
+import {API_URL} from "@/config"
 
 export async function getInstituciones(){
   try {
-    let allData= await fetch(config.URL+'/instituciones/get', {
+    let allData= await fetch(API_URL+'/instituciones/get', {
       method: 'GET',
       cache:"no-cache",
       headers: {
@@ -20,7 +20,7 @@ export async function getInstituciones(){
 }
 export async function getDepartamentos(){
   try {
-    let allData= await fetch(config.URL+'/departamentos/get', {
+    let allData= await fetch(API_URL+'/departamentos/get', {
       method: 'GET',
       cache:"no-cache",
       headers: {
@@ -37,7 +37,7 @@ export async function getDepartamentos(){
 }
 export async function getUsuarios(){
   try {
-    let allData= await fetch(config.URL+'/usuarios/get', {
+    let allData= await fetch(API_URL+'/usuarios/get', {
       method: 'GET',
       cache:"no-cache",
       headers: {

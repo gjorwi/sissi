@@ -26,6 +26,8 @@ export default function Registrar() {
   const resultOption= ()=>{}
 
   const submitFunction =handleSubmit(async (dat)=>{
+    dat={...dat,['usuId']:userDat._id}
+    // alert(JSON.stringify(dat))
     const {data,mensaje,error}= await addInstituciones(dat,userDat.token)
     questionAction(mensaje)
     reset({instName: '',instDireccion: '',instDescripcion: ''})

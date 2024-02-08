@@ -32,12 +32,21 @@ export default function ListRUDInst(){
     setMessage('La institución será eliminada.')
     setCtrlModal(true)
   }
+  const messageInfo=(val)=>{
+    setTypeModal('r')
+    setMessage(val)
+    setCtrlModal(true)
+  }
   const resultOption= ()=>{
     delecte(passVal)
   }
   const delecte = async(id)=>{
-    var idDelete={_id:id}
-    const {data,mensaje,error}= await deleteInstituciones(idDelete,userDat.token)
+    var sendData={_id:id,usuId:userDat._id}
+    const {data,mensaje,error}= await deleteInstituciones(sendData,userDat.token)
+    if(error){
+      messageInfo(mensaje)
+      return
+    }
     getAll()
   }
 

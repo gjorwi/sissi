@@ -28,11 +28,11 @@ export default function Registrar() {
   }, [])
 
   const getAllInst = async()=>{
-    const {data,mensaje,error}= await getInstituciones()
+    const {data}= await getInstituciones()
     setDataInst(data)
   }
   const getAllDepart = async()=>{
-    const {data,mensaje,error,codigo}= await getDepartamentos()
+    const {data}= await getDepartamentos()
     setDataDepart(data)
   }
 
@@ -45,6 +45,7 @@ export default function Registrar() {
   const resultOption= ()=>{}
 
   const submitFunction =handleSubmit(async (dat)=>{
+    dat={...dat,['usuId']:userDat._id}
     setCtrlLoading(true)
     const check= await checkPassword(dat.usuPassword,dat.usuPasswordconfirm)
     const numberCheck= await onlyNumbers(dat.usuCed,false)

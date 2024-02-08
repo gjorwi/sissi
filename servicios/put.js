@@ -1,8 +1,8 @@
-import config from "@/config.json"
+import {API_URL} from "@/config"
 
 export async function deleteInstituciones(data,token){
   try {
-    let deleteData= await fetch(config.URL+'/instituciones/put', {
+    let deleteData= await fetch(API_URL+'/instituciones/put', {
       method: 'PUT',
       headers: {
       'Authorization': 'Bearer '+token,
@@ -19,7 +19,7 @@ export async function deleteInstituciones(data,token){
 }
 export async function deleteDepartamentos(data,token){
   try {
-    let deleteData= await fetch(config.URL+'/departamentos/put', {
+    let deleteData= await fetch(API_URL+'/departamentos/put', {
       method: 'PUT',
       headers: {
       'Authorization': 'Bearer '+token,
@@ -36,7 +36,7 @@ export async function deleteDepartamentos(data,token){
 }
 export async function deleteUsuarios(data,token){
   try {
-    let deleteData= await fetch(config.URL+'/usuarios/put', {
+    let deleteData= await fetch(API_URL+'/usuarios/put', {
       method: 'PUT',
       headers: {
       'Authorization': 'Bearer '+token,

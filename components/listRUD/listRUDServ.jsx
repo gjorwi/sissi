@@ -32,12 +32,21 @@ export default function ListRUDServ(){
     setMessage('El departamento será eliminado.')
     setCtrlModal(true)
   }
+  const messageInfo=(val)=>{
+    setTypeModal('r')
+    setMessage(val)
+    setCtrlModal(true)
+  }
   const resultOption= ()=>{
     delecte(passVal)
   }
   const delecte = async(id)=>{
-    var idDelete={_id:id}
-    const {data,mensaje,error}= await deleteDepartamentos(idDelete,userDat)
+    var sendData={_id:id,usuId:userDat._id}
+    const {data,mensaje,error}= await deleteDepartamentos(sendData,userDat)
+    if(error){
+      messageInfo(mensaje)
+      return
+    }
     getAll()
   }
 

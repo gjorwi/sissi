@@ -26,6 +26,7 @@ export default function Registrar() {
   const resultOption= ()=>{}
 
   const submitFunction =handleSubmit(async (dat)=>{
+    dat={...dat,['usuId']:userDat._id}
     const {data,mensaje,error}= await addDepartamentos(dat,userDat.token)
     reset({departName: '',departDescripcion: ''})
     questionAction(mensaje)
