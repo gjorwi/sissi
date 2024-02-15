@@ -1,35 +1,42 @@
 'use client'
 import BtnAction from "@/components/buttons/btnAction";
 import ModalMessAction from "@/components/modals/modalMessAction";
-import { addDepartamentos } from '@/servicios/add'
+import { addDepartamentos } from '@/servicios/admin/post'
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {getStoragedUserDat} from "@/utils/utilidades";
+import {getStoragedUserDat,removeStoragedUserDat} from "@/utils/utilidades";
+import { useRouter } from "next/navigation";
 
 export default function Registrar() {
-  const {register,handleSubmit,reset,formState:{errors,isSubmitSuccessful }} = useForm({mode:'onChange'});
+  const {register,handleSubmit,reset,formState:{errors }} = useForm({mode:'onChange'});
   const [userDat,setUserDat]=useState('')
   const [ctrlModal,setCtrlModal]=useState(false)
   const [message,setMessage]=useState('')
   const [typeModal,setTypeModal]=useState('')
+  const router = useRouter();
 
   useEffect(()=>{
     setUserDat(getStoragedUserDat("userDat"))
   }, [])
 
-  const questionAction=(val)=>{
+  const messageInfo=(val)=>{
+    setTypeModal('r')
     setMessage(val)
     setCtrlModal(true)
-    setTypeModal('r')
   }
-
   const resultOption= ()=>{}
-
   const submitFunction =handleSubmit(async (dat)=>{
     dat={...dat,['usuId']:userDat._id}
     const {data,mensaje,error}= await addDepartamentos(dat,userDat.token)
+    if(error){
+      var msj='El token de seguridad ha expirado.'
+      if(mensaje==msj){
+        removeStoragedUserDat('userDat')
+        router.replace("/");
+      }
+    }
+    messageInfo(mensaje)
     reset({departName: '',departDescripcion: ''})
-    questionAction(mensaje)
   })
   
   return (

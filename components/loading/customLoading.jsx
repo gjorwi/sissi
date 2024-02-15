@@ -1,10 +1,10 @@
 import "@/app/globals.css";
 
-export default function customLoading(){
+export default function CustomLoading(){
 
   return(
     <>
-      <div className="fixed top-0 left-0 w-full h-full z-50 bg-black/20 grid place-content-center">
+      <div className="fixed top-0 left-0 right-0 w-full h-full z-50 bg-black/20 grid place-content-center">
         <div className="bg-white flex flex-col rounded-lg p-4">
           <div role="status" className="flex flex-col justify-center items-center">
             <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

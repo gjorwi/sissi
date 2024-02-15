@@ -1,12 +1,13 @@
 'use client'
 import BtnAction from "@/components/buttons/btnAction";
 import ModalMessAction from "@/components/modals/modalMessAction";
-import {checkPassword,onlyNumbers,getStoragedUserDat} from '@/utils/utilidades'
-import { getInstituciones,getDepartamentos } from '@/servicios/get'
-import { addUsuarios } from '@/servicios/add'
+import {checkPassword,onlyNumbers,getStoragedUserDat,removeStoragedUserDat} from '@/utils/utilidades'
+import { getInstituciones,getDepartamentos } from '@/servicios/admin/get'
+import { addUsuarios } from '@/servicios/admin/post'
 import CustomLoading from "@/components/loading/customLoading";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 export default function Registrar() {
   const {register,handleSubmit,reset,formState:{errors }} = useForm({mode:'onChange'});
@@ -17,33 +18,56 @@ export default function Registrar() {
   const [ctrlModal,setCtrlModal]=useState(false)
   const [message,setMessage]=useState('')
   const [typeModal,setTypeModal]=useState('')
+  const router = useRouter();
 
   useEffect(()=>{
     setUserDat(getStoragedUserDat("userDat"))
   }, [])
 
   useEffect(()=>{
-    getAllInst()
-    getAllDepart()
+    const functAweit= async()=>{
+      const valUser= await getStoragedUserDat("userDat")
+      setUserDat(valUser)
+      getAllInst(valUser)
+      getAllDepart(valUser)
+    }
+    functAweit()
   }, [])
 
-  const getAllInst = async()=>{
-    const {data}= await getInstituciones()
+  //EXTRAER INSTITUCIONES
+  const getAllInst = async(val)=>{
+    const {data,mensaje,error}= await getInstituciones(val.token)
     setDataInst(data)
+    if(error){
+      var msj='El token de seguridad ha expirado.'
+      messageInfo(mensaje)
+      if(mensaje==msj){
+        removeStoragedUserDat('userDat')
+        router.replace("/");
+      }
+    }
   }
-  const getAllDepart = async()=>{
-    const {data}= await getDepartamentos()
+  //EXTRAER DEPARTAMENTOS
+  const getAllDepart = async(val)=>{
+    const {data,mensaje,error}= await getDepartamentos(val.token)
     setDataDepart(data)
+    if(error){
+      var msj='El token de seguridad ha expirado.'
+      messageInfo(mensaje)
+      if(mensaje==msj){
+        removeStoragedUserDat('userDat')
+        router.replace("/");
+      }
+    }
   }
-
-  const questionAction=(val)=>{
+  //MODAL INFO
+  const messageInfo=(val)=>{
+    setTypeModal('r')
     setMessage(val)
     setCtrlModal(true)
-    setTypeModal('r')
   }
-
   const resultOption= ()=>{}
-
+  //SUBMIT DATA
   const submitFunction =handleSubmit(async (dat)=>{
     dat={...dat,['usuId']:userDat._id}
     setCtrlLoading(true)
@@ -62,12 +86,19 @@ export default function Registrar() {
       }
       return
     }
-    const {data,mensaje,error,codigo}= await addUsuarios(dat,userDat.token)
+    const {mensaje,error,codigo}= await addUsuarios(dat,userDat.token)
+    // if(error){
+    //   var msj='El token de seguridad ha expirado.'
+    //   if(mensaje==msj){
+    //     removeStoragedUserDat('userDat')
+    //     router.replace("/");
+    //   }
+    // }
     setCtrlLoading(false)
     if(!error && (codigo!=501 || codigo!=500)){
       reset({usuName: '',usuCed: '',usuUserName: '',usuTelefono:'',usuPassword: '',usuPasswordconfirm: '',instCod: '',departCod: ''})
     }
-    questionAction(mensaje)
+    messageInfo(mensaje)
   })
   
   return (

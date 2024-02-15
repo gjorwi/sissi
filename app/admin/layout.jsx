@@ -51,7 +51,7 @@ export default function RootLayout({ children }) {
       </header>
       <div className="flex justify-center text-sm font-light ">
         <p className="w-10/12 text-center">
-          Hola <span className="uppercase pl-1 text-black font-semibold">{userDat.usuUserName}</span>, Bienvenido al modulo de configuración.
+          Hola <span className="uppercase pl-1 text-black font-semibold">{userDat?.usuUserName}</span>, Bienvenido al modulo de configuración.
         </p>
       </div>
       {children}

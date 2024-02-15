@@ -1,4 +1,5 @@
 // import { setSession,getSession } from "next-session";
+import { usePathname,useRouter } from "next/navigation";
 
 export const checkPassword=(pass,confirm)=>{
   var mayorQ=pass.length>7

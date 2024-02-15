@@ -1,13 +1,14 @@
 'use client'
 import "@/app/globals.css";
 import { MdDelete } from "react-icons/md";
-import { getInstituciones } from '@/servicios/get'
-import { deleteInstituciones } from '@/servicios/put'
+import { getInstituciones } from '@/servicios/admin/get'
+import { deleteInstituciones } from '@/servicios/admin/put'
 import { useEffect,useState } from "react";
 import ModalMessAction from "../modals/modalMessAction";
-import {getStoragedUserDat} from "@/utils/utilidades";
+import {getStoragedUserDat,removeStoragedUserDat} from "@/utils/utilidades";
 import CustomLoading from "@/components/loading/customLoading";
 import { Suspense } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ListRUDInst(){
   const [instituciones,setInstituciones]=useState(null)
@@ -16,16 +17,31 @@ export default function ListRUDInst(){
   const [passVal,setPassVal]=useState('')
   const [message,setMessage]=useState('')
   const [typeModal,setTypeModal]=useState('')
+  const router = useRouter();
 
   useEffect(()=>{
-    setUserDat(getStoragedUserDat("userDat"))
-    getAll()
+    const functAweit= async()=>{
+      const valUser= await getStoragedUserDat("userDat")
+      setUserDat(valUser)
+      getAll(valUser)
+    }
+    functAweit()
   },[])
 
-  const getAll = async()=>{
-    const {data,mensaje,error}= await getInstituciones()
+  //ESTRAER INSTITUCIONES
+  const getAll = async(val)=>{
+    const {data,mensaje,error}= await getInstituciones(val.token)
     setInstituciones(data)
+    if(error){
+      var msj='El token de seguridad ha expirado.'
+      messageInfo(mensaje)
+      if(mensaje==msj){
+        removeStoragedUserDat('userDat')
+        router.replace("/");
+      }
+    }
   }
+  //MODAL ACTION/INFO
   const questionAction=(val)=>{
     setPassVal(val)
     setTypeModal('q')
@@ -40,11 +56,17 @@ export default function ListRUDInst(){
   const resultOption= ()=>{
     delecte(passVal)
   }
+  //DELETE
   const delecte = async(id)=>{
     var sendData={_id:id,usuId:userDat._id}
     const {data,mensaje,error}= await deleteInstituciones(sendData,userDat.token)
     if(error){
+      var msj='El token de seguridad ha expirado.'
       messageInfo(mensaje)
+      if(mensaje==msj){
+        removeStoragedUserDat('userDat')
+        router.replace("/");
+      }
       return
     }
     getAll()
@@ -62,18 +84,20 @@ export default function ListRUDInst(){
             <div>Dirección</div>
             <div className="flex justify-center">Acción</div>
           </div>
-          {instituciones?.length==0 ?
-            <div className="text-xs p-2">No hay instituciones registradas</div>
+          {instituciones?.length!=0 ?
+            <>
+              {
+                instituciones?.map((institucion,i)=>(
+                  <div key={i} className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="flex items-center pl-2">{institucion?.instName}</div>
+                    <div className="flex items-center pl-1">{institucion?.instDireccion}</div>
+                    <div onClick={()=>questionAction(institucion?._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
+                  </div>
+                ))
+              }
+            </>
             :<>
-            {
-              instituciones?.map((institucion,i)=>(
-                <div key={i} className="grid grid-cols-3 gap-2 text-xs">
-                  <div className="flex items-center pl-2">{institucion.instName}</div>
-                  <div className="flex items-center pl-1">{institucion.instDireccion}</div>
-                  <div onClick={()=>questionAction(institucion._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
-                </div>
-              ))
-            }
+              <div className="text-xs p-2">No hay instituciones registradas</div>
             </>
           }
         </div>

@@ -1,11 +1,27 @@
 import {API_URL} from "@/config"
 
-export async function addLogin(data){
+export async function addLoginAdmin(data){
   try {
-    var adddata= await fetch(API_URL+'/login/add', {
+    var adddata= await fetch(API_URL+'/admin/loginadmin/add', {
       method: 'POST',
       headers: {
-      'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    return adddata.json()
+
+  } catch (error) {
+    console.error('Un error ha ocurrido: '+error)
+    throw new Error('Fallo al cargar los datos de usuarios.')
+  }
+}
+export async function addLoginUser(data){
+  try {
+    var adddata= await fetch(API_URL+'/user/loginuser/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     })
@@ -19,11 +35,11 @@ export async function addLogin(data){
 
 export async function addInstituciones(data,token){
   try {
-    var adddata= await fetch(API_URL+'/instituciones/add', {
+    var adddata= await fetch(API_URL+'/admin/instituciones/add', {
       method: 'POST',
       headers: {
-      'Authorization': 'Bearer '+token,
-      'Content-Type': 'application/json',
+        'Authorization': token,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     })
@@ -36,10 +52,10 @@ export async function addInstituciones(data,token){
 }
 export async function addDepartamentos(data,token){
   try {
-    var adddata= await fetch(API_URL+'/departamentos/add', {
+    var adddata= await fetch(API_URL+'/admin/departamentos/add', {
       method: 'POST',
       headers: {
-      'Authorization': 'Bearer '+token,
+      'Authorization': token,
       'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
@@ -53,10 +69,10 @@ export async function addDepartamentos(data,token){
 }
 export async function addUsuarios(data,token){
   try {
-    var adddata= await fetch(API_URL+'/usuarios/add', {
+    var adddata= await fetch(API_URL+'/admin/usuarios/add', {
       method: 'POST',
       headers: {
-      'Authorization': 'Bearer '+token,
+      'Authorization': token,
       'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),

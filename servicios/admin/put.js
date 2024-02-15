@@ -5,7 +5,7 @@ export async function deleteInstituciones(data,token){
     let deleteData= await fetch(API_URL+'/instituciones/put', {
       method: 'PUT',
       headers: {
-      'Authorization': 'Bearer '+token,
+      'Authorization': token,
       'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
@@ -22,7 +22,7 @@ export async function deleteDepartamentos(data,token){
     let deleteData= await fetch(API_URL+'/departamentos/put', {
       method: 'PUT',
       headers: {
-      'Authorization': 'Bearer '+token,
+      'Authorization': token,
       'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
@@ -39,7 +39,7 @@ export async function deleteUsuarios(data,token){
     let deleteData= await fetch(API_URL+'/usuarios/put', {
       method: 'PUT',
       headers: {
-      'Authorization': 'Bearer '+token,
+      'Authorization': token,
       'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),

@@ -1,13 +1,13 @@
 'use client'
-import Link from "next/link";
-import {getInstituciones} from "@/servicios/get"
-import {addLogin} from "@/servicios/add"
+import {getInstitucionesLogin} from "@/servicios/admin/get"
+import {addLoginAdmin,addLoginUser} from "@/servicios/admin/post"
 import { useRouter } from 'next/navigation'
 import { useEffect, useState,useRef } from "react";
 import { useForm } from "react-hook-form";
 import CustomLoading from "@/components/loading/customLoading";
 import ModalMessAction from "@/components/modals/modalMessAction";
 import {storageUserDat} from '@/utils/utilidades'
+import Image from 'next/image';
 
 export default function Login() {
   const {register,handleSubmit,reset,formState:{errors }} = useForm({mode:'onChange'});
@@ -24,7 +24,7 @@ export default function Login() {
   },[])
 
   const getAllInst= async()=>{
-    const {data,mensaje,error}= await getInstituciones()
+    const {data}= await getInstitucionesLogin()
     setInstituciones(data)
   }
 
@@ -45,8 +45,9 @@ export default function Login() {
     var btnEntrar='Entrar'
     setCtrlLoading(true)
     if(submitTypeval.current==btnAdmin){
-      const {data,mensaje,error,codigo}= await addLogin(dat)
+      const {data,mensaje,error,codigo}= await addLoginAdmin(dat)
       if(!error && (codigo!=501 || codigo!=500)){
+        // sessionStorage.setItem('userDat',JSON.stringify(data))
         await storageUserDat('userDat',data)
         setCtrlLoading(false)
         router.push('/admin')
@@ -57,7 +58,16 @@ export default function Login() {
       questionAction(mensaje)
       setCtrlLoading(false)
     }else if(submitTypeval.current==btnEntrar){
-      alert('Entro en entrar')
+      const {data,mensaje,error,codigo}= await addLoginUser(dat)
+      if(!error && (codigo!=501 || codigo!=500)){
+        await storageUserDat('userDat',data)
+        setCtrlLoading(false)
+        router.push('/home')
+        reset({usuUserName: '', usuPassword: '', usuInstId:''})
+        questionAction('Entrando...')
+        return
+      }
+      questionAction(mensaje)
       setCtrlLoading(false)
     }else{
       setCtrlLoading(false)
@@ -72,10 +82,11 @@ export default function Login() {
         <ModalMessAction setCtrlModal={setCtrlModal} typeModal={typeModal} message={message} resultOption={resultOption}></ModalMessAction>
       }
       <main className="flex h-screen justify-center items-center text-sm text-slate-700 w-5/6">
-        <form onSubmit={submitFunction} autoComplete="off" className="flex flex-col rounded-2xl bg-gradient-to-b from-cyan-300 from-[-250%] to-transparent to-[40%] border border-slate-200 ">
-          <div className="p-8 py-6">
-            <div className="flex flex-col items-center p-2 justify-center text-2xl font-bold text-slate-900 mt-4">
-              <h1>SISSI</h1>
+        <form onSubmit={submitFunction} autoComplete="off" className="flex flex-col rounded-2xl bg-gradient-to-b from-cyan-300 from-[-250%] to-transparent to-[40%] shadow ">
+          <div className="px-8 py-6">
+            <div className="flex flex-col items-center p-2 justify-center text-2xl font-bold text-slate-900">
+              {/* <Image src="/img/logo.png" alt="Large Image" width={150} height={150} className="opacity-90 -mt-4"/> */}
+              <h1 className="">SISSI</h1>
               <p className="text-sm font-light">Sistema de solicitud de servicios institucional</p>
               <div className="p-2 mt-4">
                 <select name="usuInstId" {...register("usuInstId", { required: {value:true,message:'La institución es requerida.'} })} className="text-xs font-light p-2 outline-none rounded-lg bg-cyan-500 text-white">
