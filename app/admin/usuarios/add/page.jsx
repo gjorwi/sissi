@@ -1,17 +1,18 @@
 'use client'
 import BtnAction from "@/components/buttons/btnAction";
 import ModalMessAction from "@/components/modals/modalMessAction";
-import {checkPassword,onlyNumbers,getStoragedUserDat,removeStoragedUserDat} from '@/utils/utilidades'
+import {checkPassword,onlyNumbers,removeStoragedUserDat} from '@/utils/utilidades'
 import { getInstituciones,getDepartamentos } from '@/servicios/admin/get'
 import { addUsuarios } from '@/servicios/admin/post'
 import CustomLoading from "@/components/loading/customLoading";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import useDataSavedStorage from "@/hooks/useDataSavedStorage";
 
 export default function Registrar() {
+  const {userDat}=useDataSavedStorage('userDat')
   const {register,handleSubmit,reset,formState:{errors }} = useForm({mode:'onChange'});
-  const [userDat,setUserDat]=useState('')
   const [ctrlLoading,setCtrlLoading]=useState(false)
   const [dataInst,setDataInst]=useState([])
   const [dataDepart,setDataDepart]=useState([])
@@ -21,18 +22,11 @@ export default function Registrar() {
   const router = useRouter();
 
   useEffect(()=>{
-    setUserDat(getStoragedUserDat("userDat"))
-  }, [])
-
-  useEffect(()=>{
-    const functAweit= async()=>{
-      const valUser= await getStoragedUserDat("userDat")
-      setUserDat(valUser)
-      getAllInst(valUser)
-      getAllDepart(valUser)
+    if(userDat){
+      getAllInst(userDat)
+      getAllDepart(userDat)
     }
-    functAweit()
-  }, [])
+  },[userDat])
 
   //EXTRAER INSTITUCIONES
   const getAllInst = async(val)=>{
@@ -87,13 +81,13 @@ export default function Registrar() {
       return
     }
     const {mensaje,error,codigo}= await addUsuarios(dat,userDat.token)
-    // if(error){
-    //   var msj='El token de seguridad ha expirado.'
-    //   if(mensaje==msj){
-    //     removeStoragedUserDat('userDat')
-    //     router.replace("/");
-    //   }
-    // }
+    if(error){
+      var msj='El token de seguridad ha expirado.'
+      if(mensaje==msj){
+        removeStoragedUserDat('userDat')
+        router.replace("/");
+      }
+    }
     setCtrlLoading(false)
     if(!error && (codigo!=501 || codigo!=500)){
       reset({usuName: '',usuCed: '',usuUserName: '',usuTelefono:'',usuPassword: '',usuPasswordconfirm: '',instCod: '',departCod: ''})

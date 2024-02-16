@@ -1,18 +1,18 @@
 'use client'
 import "@/app/globals.css";
 import { MdDelete } from "react-icons/md";
-import { getSolicitudes } from '@/servicios/user/get'
-import { deleteInstituciones } from '@/servicios/admin/put'
+import { getSolicitudes } from '@/servicios/user/put'
 import { useEffect,useState } from "react";
 import ModalMessAction from "../modals/modalMessAction";
-import {getStoragedUserDat,removeStoragedUserDat} from "@/utils/utilidades";
+import {removeStoragedUserDat} from "@/utils/utilidades";
 import CustomLoading from "@/components/loading/customLoading";
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
+import useDataSavedStorage from "@/hooks/useDataSavedStorage";
 
 export default function ListRUDInst(){
+  const {userDat}=useDataSavedStorage('userDat')
   const [solicitudes,setSolicitudes]=useState(null)
-  const [userDat,setUserDat]=useState('')
   const [ctrlModal,setCtrlModal]=useState(false)
   const [passVal,setPassVal]=useState('')
   const [message,setMessage]=useState('')
@@ -20,17 +20,14 @@ export default function ListRUDInst(){
   const router = useRouter();
 
   useEffect(()=>{
-    const functAweit= async()=>{
-      const valUser= await getStoragedUserDat("userDat")
-      setUserDat(valUser)
-      getAll(valUser)
-    }
-    functAweit()
-  },[])
+    if(userDat)
+    getAll(userDat)
+  },[userDat])
 
   //ESTRAER INSTITUCIONES
   const getAll = async(val)=>{
-    const {data,mensaje,error}= await getSolicitudes(val.token)
+    const sendData={usuInstId:val.usuInstId,usuDepartId:val.usuDepartId}
+    const {data,mensaje,error}= await getSolicitudes(sendData,val.token)
     setSolicitudes(data)
     if(error){
       var msj='El token de seguridad ha expirado.'
@@ -54,23 +51,23 @@ export default function ListRUDInst(){
     setCtrlModal(true)
   }
   const resultOption= ()=>{
-    delecte(passVal)
+    // delecte(passVal)
   }
   //DELETE
-  const delecte = async(id)=>{
-    var sendData={_id:id,usuId:userDat._id}
-    const {data,mensaje,error}= await deleteInstituciones(sendData,userDat.token)
-    if(error){
-      var msj='El token de seguridad ha expirado.'
-      messageInfo(mensaje)
-      if(mensaje==msj){
-        removeStoragedUserDat('userDat')
-        router.replace("/");
-      }
-      return
-    }
-    getAll()
-  }
+  // const delecte = async(id)=>{
+  //   var sendData={_id:id,usuId:userDat._id}
+  //   const {data,mensaje,error}= await deleteInstituciones(sendData,userDat.token)
+  //   if(error){
+  //     var msj='El token de seguridad ha expirado.'
+  //     messageInfo(mensaje)
+  //     if(mensaje==msj){
+  //       removeStoragedUserDat('userDat')
+  //       router.replace("/");
+  //     }
+  //     return
+  //   }
+  //   getAll()
+  // }
 
   return(
     <>
@@ -79,19 +76,21 @@ export default function ListRUDInst(){
       }
       <Suspense fallback={<CustomLoading/>}>
         <div className="flex flex-col text-sm bg-white rounded-xl drop-shadow-sm pb-4">
-          <div className="grid grid-cols-3 gap-2 bg-slate-200 p-2 rounded-lg uppercase">
+          <div className="grid grid-cols-4 gap-2 bg-slate-200 p-2 rounded-lg uppercase">
             <div>Departamento</div>
             <div>Usuario</div>
+            <div>Estado</div>
             <div className="flex justify-center">Acción</div>
           </div>
           {(solicitudes && solicitudes?.length!=0) ?
             <>
               {
-                solicitudes?.map((solicitude,i)=>(
-                  <div key={i} className="grid grid-cols-3 gap-2 text-xs">
-                    <div className="flex items-center pl-2">{solicitude?.instName}</div>
-                    <div className="flex items-center pl-1">{solicitude?.instDireccion}</div>
-                    <div onClick={()=>questionAction(solicitude?._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
+                solicitudes?.map((solicitud,i)=>(
+                  <div key={i} className="grid grid-cols-4 gap-2 text-xs">
+                    <div className="flex items-center pl-2">{solicitud?.solDepartIdDest?.departName}</div>
+                    <div className="flex items-center pl-1">{solicitud?.solAsignUsuId?.usuName}</div>
+                    <div className={(solicitud?.solFases=='pendiente'?'text-blue-500':solicitud?.solFases=='en proceso'?'text-orange-500':solicitud?.solFases=='terminado'?'text-green-500':'')+" flex items-center pl-1"}>{solicitud?.solFases?.toUpperCase()}</div>
+                    <div onClick={()=>questionAction(solicitud?._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
                   </div>
                 ))
               }

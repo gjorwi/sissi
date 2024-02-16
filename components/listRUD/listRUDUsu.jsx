@@ -5,13 +5,14 @@ import { getUsuarios} from '@/servicios/admin/get'
 import { deleteUsuarios } from '@/servicios/admin/put'
 import { useEffect,useState } from "react";
 import ModalMessAction from "../modals/modalMessAction";
-import {getStoragedUserDat,removeStoragedUserDat} from "@/utils/utilidades";
+import {removeStoragedUserDat} from "@/utils/utilidades";
 import CustomLoading from "@/components/loading/customLoading";
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
+import useDataSavedStorage from "@/hooks/useDataSavedStorage";
 
 export default function ListRUDServ(){
-  const [userDat,setUserDat]=useState('')
+  const {userDat}=useDataSavedStorage('userDat')
   const [usuarios,setUsuarios]=useState(null)
   const [ctrlModal,setCtrlModal]=useState(false)
   const [passVal,setPassVal]=useState('')
@@ -20,13 +21,10 @@ export default function ListRUDServ(){
   const router = useRouter();
 
   useEffect(()=>{
-    const functAweit= async()=>{
-      const valUser= await getStoragedUserDat("userDat")
-      setUserDat(valUser)
-      getAll(valUser)
-    }
-    functAweit()
-  },[])
+    if(userDat)
+    getAll(userDat)
+    
+  },[userDat])
   
   //EXTRAER USUARIOS
   const getAll = async(val)=>{
@@ -79,18 +77,22 @@ export default function ListRUDServ(){
       }
       <Suspense fallback={<CustomLoading/>}>
         <div className="flex flex-col text-sm">
-          <div className="grid grid-cols-3 gap-2 bg-slate-200 p-2 rounded-lg uppercase">
+          <div className="grid grid-cols-5 gap-2 bg-slate-200 p-2 rounded-lg uppercase">
             <div>Cedula</div>
             <div>Usuario</div>
+            <div>Institución</div>
+            <div>Departamento</div>
             <div className="flex justify-center">Acción</div>
           </div>
           {usuarios?.length!=0 ?
             <>
               {
                 usuarios?.map((usuario,i)=>(
-                  <div key={i} className="grid grid-cols-3 gap-2 text-xs">
+                  <div key={i} className="grid grid-cols-5 gap-2 text-xs">
                     <div className="flex items-center pl-2">{usuario?.usuCed}</div>
                     <div className="flex items-center pl-1">{usuario?.usuUserName}</div>
+                    <div className="flex items-center pl-1">{usuario?.usuInstId?.instName}</div>
+                    <div className="flex items-center pl-1">{usuario?.usuDepartId?.departName}</div>
                     <div onClick={()=>questionAction(usuario?._id)} className="flex justify-center items-center text-red-500 cursor-pointer p-2"><MdDelete className="text-lg"/></div>
                   </div>
                 ))

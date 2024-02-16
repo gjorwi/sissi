@@ -16,3 +16,20 @@ export async function addLoginUser(data){
     throw new Error('Fallo al cargar los datos de usuarios.')
   }
 }
+export async function addSolicitudes(data,token){
+  try {
+    var adddata= await fetch(API_URL+'/user/solicitudes/add', {
+      method: 'POST',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    return adddata.json()
+
+  } catch (error) {
+    console.error('Un error ha ocurrido: '+error)
+    throw new Error('Fallo al cargar los datos de usuarios.')
+  }
+}

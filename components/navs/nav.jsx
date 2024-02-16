@@ -13,11 +13,11 @@ export default function Nav(){
   const routes=[
     {
       href:'/home',
-      label:'Solicitudes'
+      label:'SOLICITUDES'
     },
     {
       href:'/home/resumen',
-      label:'Resumen'
+      label:'RESUMEN'
     }
   ]
   const LogOut =()=>{
@@ -36,7 +36,7 @@ export default function Nav(){
           {
             routes.map(({href,label})=>(
               <li key={href}>
-                <Link href={href} className="text-white">
+                <Link href={href} className="text-white font-semibold">
                   {label}
                 </Link>
               </li>

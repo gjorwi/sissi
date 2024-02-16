@@ -5,13 +5,14 @@ import { getDepartamentos} from '@/servicios/admin/get'
 import { deleteDepartamentos } from '@/servicios/admin/put'
 import { useEffect,useState } from "react";
 import ModalMessAction from "../modals/modalMessAction";
-import {getStoragedUserDat,removeStoragedUserDat} from "@/utils/utilidades";
+import {removeStoragedUserDat} from "@/utils/utilidades";
 import CustomLoading from "@/components/loading/customLoading";
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
+import useDataSavedStorage from "@/hooks/useDataSavedStorage";
 
 export default function ListRUDServ(){
-  const [userDat,setUserDat]=useState('')
+  const {userDat}=useDataSavedStorage('userDat')
   const [departamentos,setDepartamentos]=useState(null)
   const [ctrlModal,setCtrlModal]=useState(false)
   const [passVal,setPassVal]=useState('')
@@ -20,13 +21,9 @@ export default function ListRUDServ(){
   const router = useRouter();
 
   useEffect(()=>{
-    const functAweit= async()=>{
-      const valUser= await getStoragedUserDat("userDat")
-      setUserDat(valUser)
-      getAll(valUser)
-    }
-    functAweit()
-  },[])
+    if(userDat)
+    getAll(userDat)
+  },[userDat])
 
   //EXTRAER DEPARTAMENTOS
   const getAll = async(val)=>{
